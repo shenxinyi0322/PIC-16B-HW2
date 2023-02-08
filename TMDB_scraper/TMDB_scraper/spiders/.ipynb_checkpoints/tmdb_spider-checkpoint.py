@@ -13,13 +13,13 @@ class TmdbSpider(scrapy.Spider):
     # parse() is implemented in no more than 5 lines
     def parse(self, response):
         '''
-        Parse the movie page to obtain the link to the Full Cast & Crew page
-        Then navigate to Full Cast & Crew page
+        Parse the movie page to obtain the link to the Cast & Crew page
+        Then navigate to Cast & Crew page
         '''
-        #obtain the link to the Full Cast & Crew page
+        #obtain the link to the Cast & Crew page
         cast_link = response.css('p.new_button a::attr(href)').get()
         
-        #if the Full Cast & Crew link exist and is reached
+        #if the Cast & Crew link exist and is reached
         #call parse_full_credits(self, response) method
         if cast_link:
             cast_link = response.urljoin(cast_link)
@@ -28,8 +28,8 @@ class TmdbSpider(scrapy.Spider):
     # parse_full_credits() is implemented in no more than 5 lines
     def parse_full_credits(self, response):
         '''
-            Parse the Full Cast & Crew page to obtain the links of all actors & actresses
-            Then navigate to each page of actors & actresses & 
+        Parse the Cast & Crew page to obtain the links of all actors & actresses
+        Then navigate to each page of actors & actresses 
         '''
         #avoid scrapy links of crew members
         selected_class=response.css("ol:not([class='people credits crew'])")
@@ -38,14 +38,14 @@ class TmdbSpider(scrapy.Spider):
         #call parse_actor_page(self, response) method when each actor’s page reached
         for link in actor_links:  
             yield scrapy.Request(url = "https://www.themoviedb.org" + link,
-                                     callback=self.parse_actor_page)
+                                 callback=self.parse_actor_page)
         
             
     # parse_actor_page() is implemented in no more than 15 lines
     def parse_actor_page(self, response):
         '''
-            Parse the Actor page to obatin the actor name and previous works
-            Then compute a dictionary with the actor name and the movie name
+        Parse the Actor page to obatin the actor name and previous works
+        Then compute a dictionary with the actor name and the movie name
         '''
         #get the name of the actor or actress 
         actor_name = response.css("h2.title a::text").get()
